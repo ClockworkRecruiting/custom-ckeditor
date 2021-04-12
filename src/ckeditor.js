@@ -10,6 +10,8 @@ import CKFinderUploadAdapter from '@ckeditor/ckeditor5-adapter-ckfinder/src/uplo
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials.js';
 import FontSize from '@ckeditor/ckeditor5-font/src/fontsize.js';
 import Highlight from '@ckeditor/ckeditor5-highlight/src/highlight.js';
+import Image from '@ckeditor/ckeditor5-image/src/image.js';
+import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload.js';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent.js';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock.js';
 import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic.js';
@@ -32,6 +34,8 @@ Editor.builtinPlugins = [
 	Essentials,
 	FontSize,
 	Highlight,
+	Image,
+	ImageUpload,
 	Indent,
 	IndentBlock,
 	Italic,
