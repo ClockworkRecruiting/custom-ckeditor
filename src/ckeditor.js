@@ -11,6 +11,7 @@ import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials.js';
 import FontSize from '@ckeditor/ckeditor5-font/src/fontsize.js';
 import Highlight from '@ckeditor/ckeditor5-highlight/src/highlight.js';
 import Image from '@ckeditor/ckeditor5-image/src/image.js';
+import ImageStyle from '@ckeditor/ckeditor5-image/src/imagestyle.js';
 import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload.js';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent.js';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock.js';
@@ -35,6 +36,7 @@ Editor.builtinPlugins = [
 	FontSize,
 	Highlight,
 	Image,
+	ImageStyle,
 	ImageUpload,
 	Indent,
 	IndentBlock,
