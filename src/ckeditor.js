@@ -27,6 +27,10 @@ import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefrom
 import RemoveFormat from '@ckeditor/ckeditor5-remove-format/src/removeformat.js';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation.js';
 import Underline from '@ckeditor/ckeditor5-basic-styles/src/underline.js';
+<<<<<<< Updated upstream
+=======
+import Mention from '../packages/ckeditor-5-mentions';
+>>>>>>> Stashed changes
 
 class Editor extends ClassicEditor {}
 
