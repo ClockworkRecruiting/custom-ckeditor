@@ -152,15 +152,14 @@ export default class MentionUI extends Plugin {
 				throw new CKEditorError( 'mentionconfig-incorrect-marker', null, { marker } );
 			}
 
-			const minimumCharacters = mentionDescription.minimumCharacters || 0;
 			const feedCallback = typeof feed == 'function' ? feed.bind( this.editor ) : createFeedCallback( feed );
-			const watcher = this._setupTextWatcherForFeed( marker, minimumCharacters );
 			const itemRenderer = mentionDescription.itemRenderer;
 
-			const definition = { watcher, marker, feedCallback, itemRenderer };
+			const definition = { marker, feedCallback, itemRenderer };
 
 			this._mentionsConfigurations.set( marker, definition );
 		}
+		this._setupTextWatcher( feeds );
 
 		this.on( 'requestFeed:response', ( evt, data ) => this._handleFeedResponse( data ) );
 		this.on( 'requestFeed:error', () => this._hideUIAndRemoveMarker() );
@@ -359,25 +358,34 @@ export default class MentionUI extends Plugin {
 	 * @private
 	 * @param {String} marker
 	 * @param {Number} minimumCharacters
+	 * @param {Array.<Object>} feeds Feeds of mention plugin configured in editor
 	 * @returns {module:typing/textwatcher~TextWatcher}
 	 */
-	_setupTextWatcherForFeed( marker, minimumCharacters ) {
+	_setupTextWatcher( feeds ) {
 		const editor = this.editor;
 
-		const watcher = new TextWatcher( editor.model, createTestCallback( marker, minimumCharacters ) );
+		const feedsWithPattern = feeds.map( feed => ( {
+			...feed,
+			pattern: createRegExp( feed.marker, feed.minimumCharacters || 0 )
+		} ) );
+
+		const watcher = new TextWatcher( editor.model, createTestCallback( feedsWithPattern ) );
 
 		watcher.on( 'matched', ( evt, data ) => {
+			const markerDefinition = getLastValidMarkerInText( feedsWithPattern, data.text );
+
 			const selection = editor.model.document.selection;
 			const focus = selection.focus;
+			const markerPosition = editor.model.createPositionAt( focus.parent, markerDefinition.position );
 
-			if ( hasExistingMention( focus ) ) {
+			if ( isPositionInExistingMention( focus ) || isMarkerInExistingMention( markerPosition ) ) {
 				this._hideUIAndRemoveMarker();
 
 				return;
 			}
 
-			const feedText = requestFeedText( marker, data.text );
-			const matchedTextLength = marker.length + feedText.length;
+			const feedText = requestFeedText( markerDefinition, data.text );
+			const matchedTextLength = markerDefinition.marker.length + feedText.length;
 
 			// Create a marker range.
 			const start = focus.getShiftedBy( -matchedTextLength );
@@ -400,7 +408,7 @@ export default class MentionUI extends Plugin {
 
 			this.feedText = feedText;
 
-			this._requestFeedDebounced( marker, feedText );
+			this._requestFeedDebounced( markerDefinition.marker, feedText );
 		} );
 
 		watcher.on( 'unmatched', () => {
@@ -631,6 +639,43 @@ function getBalloonPanelPositions( preferredPosition ) {
 	];
 }
 
+// Returns a marker definition of the last valid occuring marker in given string.
+// If there is no valid marker in string it returns undefined.
+//
+// Example of returned object:
+//
+//		{
+//			marker: '@',
+//			position: 4,
+//			minimumCharacters: 0
+//		}
+//
+// @param {Array.<Object>} feedsWithPattern Registered feeds in editor for mention plugin with created RegExp for matching marker.
+// @param {String} text String to find marker in
+// @returns {Object} Matched marker's definition
+function getLastValidMarkerInText( feedsWithPattern, text ) {
+	let lastValidMarker;
+
+	for ( const feed of feedsWithPattern ) {
+		const currentMarkerLastIndex = text.lastIndexOf( feed.marker );
+
+		if ( currentMarkerLastIndex > 0 && !text.substring( currentMarkerLastIndex - 1 ).match( feed.pattern ) ) {
+			continue;
+		}
+
+		if ( !lastValidMarker || currentMarkerLastIndex >= lastValidMarker.position ) {
+			lastValidMarker = {
+				marker: feed.marker,
+				position: currentMarkerLastIndex,
+				minimumCharacters: feed.minimumCharacters,
+				pattern: feed.pattern
+			};
+		}
+	}
+
+	return lastValidMarker;
+}
+
 // Creates a RegExp pattern for the marker.
 //
 // Function has to be exported to achieve 100% code coverage.
@@ -642,39 +687,61 @@ export function createRegExp( marker, minimumCharacters ) {
 	const numberOfCharacters = minimumCharacters == 0 ? '*' : `{${ minimumCharacters },}`;
 
 	const openAfterCharacters = env.features.isRegExpUnicodePropertySupported ? '\\p{Ps}\\p{Pi}"\'' : '\\(\\[{"\'';
-	const mentionCharacters = '\\S';
-
+	const mentionCharacters = '.';
 	// The pattern consists of 3 groups:
 	// - 0 (non-capturing): Opening sequence - start of the line, space or an opening punctuation character like "(" or "\"",
 	// - 1: The marker character,
 	// - 2: Mention input (taking the minimal length into consideration to trigger the UI),
 	//
 	// The pattern matches up to the caret (end of string switch - $).
-	//               (0:      opening sequence       )(1:  marker   )(2:                typed mention                 )$
-	const pattern = `(?:^|[ ${ openAfterCharacters }])([${ marker }])([${ mentionCharacters }]${ numberOfCharacters })$`;
+	//               (0:      opening sequence       )(1:   marker  )(2:                typed mention              )$
+	const pattern = `(?:^|[ ${ openAfterCharacters }])([${ marker }])(${ mentionCharacters }${ numberOfCharacters })$`;
 
 	return new RegExp( pattern, 'u' );
 }
 
 // Creates a test callback for the marker to be used in the text watcher instance.
 //
-// @param {String} marker
-// @param {Number} minimumCharacters
+// @param {Array.<Object>} feedsWithPattern Feeds of mention plugin configured in editor with RegExp to match marker in text
 // @returns {Function}
-function createTestCallback( marker, minimumCharacters ) {
-	const regExp = createRegExp( marker, minimumCharacters );
+function createTestCallback( feedsWithPattern ) {
+	// const regExp = createRegExp( marker, minimumCharacters );
 
-	return text => regExp.test( text );
+	const textMatcher = text => {
+		const markerDefinition = getLastValidMarkerInText( feedsWithPattern, text );
+
+		if ( !markerDefinition ) {
+			return false;
+		}
+
+		let splitStringFrom = 0;
+
+		if ( markerDefinition.position !== 0 ) {
+			splitStringFrom = markerDefinition.position - 1;
+		}
+
+		const textToTest = text.substring( splitStringFrom );
+
+		return markerDefinition.pattern.test( textToTest );
+	};
+
+	return textMatcher;
 }
 
 // Creates a text matcher from the marker.
 //
-// @param {String} marker
+// @param {Object} markerDefinition
+// @param {String} text
 // @returns {Function}
-function requestFeedText( marker, text ) {
-	const regExp = createRegExp( marker, 0 );
+function requestFeedText( markerDefinition, text ) {
+	let splitStringFrom = 0;
+	if ( markerDefinition.position !== 0 ) {
+		splitStringFrom = markerDefinition.position - 1;
+	}
 
-	const match = text.match( regExp );
+	const regExp = createRegExp( markerDefinition.marker, 0 );
+	const textToMatch = text.substring( splitStringFrom );
+	const match = textToMatch.match( regExp );
 
 	return match[ 2 ];
 }
@@ -719,6 +786,31 @@ function hasExistingMention( position ) {
 	const nodeBefore = position.nodeBefore;
 
 	return hasMention || nodeBefore && nodeBefore.is( '$text' ) && nodeBefore.hasAttribute( 'mention' );
+}
+
+/**
+ * Checks if position in inside or right after a text with a mention.
+ */
+function isPositionInExistingMention( position ) {
+	// The text watcher listens only to changed range in selection - so the selection attributes are not yet available
+	// and you cannot use selection.hasAttribute( 'mention' ) just yet.
+	// See https://github.com/ckeditor/ckeditor5-engine/issues/1723.
+	const hasMention = position.textNode && position.textNode.hasAttribute( 'mention' );
+
+	const nodeBefore = position.nodeBefore;
+
+	return hasMention || nodeBefore && nodeBefore.is( '$text' ) && nodeBefore.hasAttribute( 'mention' );
+}
+
+/**
+ * Checks if the closest marker offset is at the beginning of a mention.
+ *
+ * See https://github.com/ckeditor/ckeditor5/issues/11400.
+ */
+function isMarkerInExistingMention( markerPosition ) {
+	const nodeAfter = markerPosition.nodeAfter;
+
+	return nodeAfter && nodeAfter.is( '$text' ) && nodeAfter.hasAttribute( 'mention' );
 }
 
 // Checks if string is a valid mention marker.
