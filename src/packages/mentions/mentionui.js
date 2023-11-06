@@ -229,6 +229,8 @@ export default class MentionUI extends Plugin {
 			const item = data.item;
 			const marker = data.marker;
 
+			if (typeof item.onSelect === 'function') item.onSelect({ selectedItem: item, marker });
+
 			if (item.isDisabled) return; // for disabled list item do not create the tags
 
 			if (item.nestedFeedId) { // nested field id is present check for if it is clickable or not
