@@ -708,10 +708,7 @@ function createTestCallback( feedsWithPattern ) {
 	// const regExp = createRegExp( marker, minimumCharacters );
 
 	const textMatcher = text => {
-		console.log(text, 'text in create test callback');
 		const markerDefinition = getLastValidMarkerInText( feedsWithPattern, text );
-
-		console.log(markerDefinition, 'markerDefinition');
 
 		if ( !markerDefinition ) {
 			return false;
@@ -724,8 +721,6 @@ function createTestCallback( feedsWithPattern ) {
 		}
 
 		const textToTest = text.substring( splitStringFrom );
-
-		console.log(textToTest, 'textToTest');
 
 		return markerDefinition.pattern.test( textToTest );
 	};
