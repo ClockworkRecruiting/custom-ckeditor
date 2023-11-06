@@ -152,9 +152,7 @@ export default class MentionUI extends Plugin {
 				throw new CKEditorError( 'mentionconfig-incorrect-marker', null, { marker } );
 			}
 
-			// const minimumCharacters = mentionDescription.minimumCharacters || 0;
 			const feedCallback = typeof feed == 'function' ? feed.bind( this.editor ) : createFeedCallback( feed );
-			// const watcher = this._setupTextWatcherForFeed( marker, minimumCharacters );
 			const itemRenderer = mentionDescription.itemRenderer;
 
 			const definition = { marker, feedCallback, itemRenderer };
@@ -689,7 +687,6 @@ export function createRegExp( marker, minimumCharacters ) {
 	const numberOfCharacters = minimumCharacters == 0 ? '*' : `{${ minimumCharacters },}`;
 
 	const openAfterCharacters = env.features.isRegExpUnicodePropertySupported ? '\\p{Ps}\\p{Pi}"\'' : '\\(\\[{"\'';
-	// const mentionCharacters = '\\S';
 	const mentionCharacters = '.';
 	// The pattern consists of 3 groups:
 	// - 0 (non-capturing): Opening sequence - start of the line, space or an opening punctuation character like "(" or "\"",
