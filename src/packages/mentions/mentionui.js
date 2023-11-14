@@ -81,6 +81,11 @@ export default class MentionUI extends Plugin {
 		 */
 		this._requestFeedDebounced = debounce( this._requestFeed, 100 );
 
+		/**
+		 * use to close the selector UI on outside click and restart the UI only when user type feed mention type eg `#` or `@`
+		 */
+		this.isShowMentionSelector = false;
+
 		editor.config.define( 'mention', { feeds: [] } );
 	}
 
@@ -375,12 +380,17 @@ export default class MentionUI extends Plugin {
 
 		watcher.on( 'matched', ( evt, data ) => {
 			const markerDefinition = getLastValidMarkerInText( feedsWithPattern, data.text );
-
 			const selection = editor.model.document.selection;
 			const focus = selection.focus;
+
 			const markerPosition = editor.model.createPositionAt( focus.parent, markerDefinition.position );
 
-			if ( isPositionInExistingMention( focus ) || isMarkerInExistingMention( markerPosition ) ) {
+			if (!this.isShowMentionSelector) {
+				// if selector is closed check if current character is a mention marker i.e @ or # then show the selector or else go for default one
+				this.isShowMentionSelector = data.text.charAt(data.text.length - 1) === markerDefinition.marker
+			}
+
+			if ( isPositionInExistingMention( focus ) || isMarkerInExistingMention( markerPosition ) || !this.isShowMentionSelector) {
 				this._hideUIAndRemoveMarker();
 
 				return;
@@ -497,6 +507,7 @@ export default class MentionUI extends Plugin {
 		// Make the last matched position on panel view undefined so the #_getBalloonPanelPositionData() method will return all positions
 		// on the next call.
 		this._mentionsView.position = undefined;
+		this.isShowMentionSelector = false;
 	}
 
 	/**
@@ -707,8 +718,6 @@ export function createRegExp( marker, minimumCharacters ) {
 // @param {Array.<Object>} feedsWithPattern Feeds of mention plugin configured in editor with RegExp to match marker in text
 // @returns {Function}
 function createTestCallback( feedsWithPattern ) {
-	// const regExp = createRegExp( marker, minimumCharacters );
-
 	const textMatcher = text => {
 		const markerDefinition = getLastValidMarkerInText( feedsWithPattern, text );
 
@@ -773,21 +782,6 @@ function createFeedCallback( feedItems ) {
 // @returns {Boolean}
 function isHandledKey( keyCode ) {
 	return handledKeyCodes.includes( keyCode );
-}
-
-// Checks if position in inside or right after a text with a mention.
-//
-// @param {module:engine/model/position~Position} position.
-// @returns {Boolean}
-function hasExistingMention( position ) {
-	// The text watcher listens only to changed range in selection - so the selection attributes are not yet available
-	// and you cannot use selection.hasAttribute( 'mention' ) just yet.
-	// See https://github.com/ckeditor/ckeditor5-engine/issues/1723.
-	const hasMention = position.textNode && position.textNode.hasAttribute( 'mention' );
-
-	const nodeBefore = position.nodeBefore;
-
-	return hasMention || nodeBefore && nodeBefore.is( '$text' ) && nodeBefore.hasAttribute( 'mention' );
 }
 
 /**
