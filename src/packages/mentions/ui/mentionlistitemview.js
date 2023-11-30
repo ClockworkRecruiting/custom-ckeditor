@@ -10,6 +10,11 @@
 import { ListItemView } from '@ckeditor/ckeditor5-ui';
 
 export default class MentionListItemView extends ListItemView {
+	constructor( locale, handleFocusFirst ) {
+		super(locale);
+		this.handleFocusFirst = handleFocusFirst
+	}
+
 	highlight() {
 		const child = this.children.first;
 
@@ -20,5 +25,15 @@ export default class MentionListItemView extends ListItemView {
 		const child = this.children.first;
 
 		child.isOn = false;
+	}
+
+	/**
+	 * Focuses the list item.
+	 */
+	focus() {
+		// CUSTOM CKEDITOR CODE START
+		if (typeof this.handleFocusFirst === 'function') this.handleFocusFirst();
+		else super.focus();
+		// CUSTOM CKEDITOR CODE END
 	}
 }

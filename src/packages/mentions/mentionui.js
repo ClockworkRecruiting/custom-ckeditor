@@ -200,6 +200,7 @@ export default class MentionUI extends Plugin {
 	 */
 	_createMentionView() {
 		const locale = this.editor.locale;
+		const handleFocusFirst = () => this.editor.editing.view.focus();
 
 		const mentionsView = new MentionsView( locale );
 
@@ -208,7 +209,7 @@ export default class MentionUI extends Plugin {
 		mentionsView.items.bindTo( this._items ).using( data => {
 			const { item, marker } = data;
 
-			const listItemView = new MentionListItemView( locale );
+			const listItemView = new MentionListItemView( locale, handleFocusFirst );
 
 			const view = this._renderItem( item, marker );
 			view.delegate( 'execute' ).to( listItemView );
