@@ -27,7 +27,6 @@ import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefrom
 import RemoveFormat from '@ckeditor/ckeditor5-remove-format/src/removeformat.js';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation.js';
 import Underline from '@ckeditor/ckeditor5-basic-styles/src/underline.js';
-import GeneralHtmlSupport from '@ckeditor/ckeditor5-html-support/src/generalhtmlsupport.js';
 import Mention from './packages/mentions/mention';
 
 class Editor extends ClassicEditor {}
@@ -40,7 +39,6 @@ Editor.builtinPlugins = [
 	CKFinderUploadAdapter,
 	Essentials,
 	FontSize,
-	GeneralHtmlSupport,
 	Highlight,
 	Image,
 	ImageCaption,
