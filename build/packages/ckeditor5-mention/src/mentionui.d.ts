@@ -1,12 +1,12 @@
 /**
- * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * @license Copyright (c) 2003-2024, CKSource Holding sp. z o.o. All rights reserved.
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 /**
  * @module mention/mentionui
  */
-import { Plugin, type Editor } from 'ckeditor5/src/core';
-import { ContextualBalloon } from 'ckeditor5/src/ui';
+import { Plugin, type Editor } from 'ckeditor5/src/core.js';
+import { ContextualBalloon } from 'ckeditor5/src/ui.js';
 /**
  * The mention UI feature.
  */
@@ -29,10 +29,16 @@ export default class MentionUI extends Plugin {
      * Debounced feed requester. It uses `lodash#debounce` method to delay function call.
      */
     private _requestFeedDebounced;
+    feedText: string | undefined;
+    isShowMentionSelector: boolean;
     /**
      * @inheritDoc
      */
     static get pluginName(): "MentionUI";
+    /**
+     * @inheritDoc
+     */
+    static get isOfficialPlugin(): true;
     /**
      * @inheritDoc
      */

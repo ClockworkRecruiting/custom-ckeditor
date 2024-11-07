@@ -5,7 +5,7 @@
 
 import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic';
 
-import { UploadAdapter } from '@ckeditor/ckeditor5-adapter-ckfinder';
+import { CKFinderUploadAdapter } from '@ckeditor/ckeditor5-adapter-ckfinder';
 import { Autoformat } from '@ckeditor/ckeditor5-autoformat';
 import { Bold, Italic, Underline } from '@ckeditor/ckeditor5-basic-styles';
 import { BlockQuote } from '@ckeditor/ckeditor5-block-quote';
@@ -66,7 +66,7 @@ class Editor extends ClassicEditor {
 		TextTransformation,
 		Underline,
 		Undo,
-		UploadAdapter
+		CKFinderUploadAdapter
 	];
 
 	public static override defaultConfig: EditorConfig = {

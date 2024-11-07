@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
     "lib": [
       "ES2019",
       "ES2020.String",
@@ -18,6 +22,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "./src"
+    "./src",
+    "./packages/ckeditor5-mention/src"
   ]
 }

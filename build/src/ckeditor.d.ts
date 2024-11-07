@@ -3,7 +3,7 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic';
-import { UploadAdapter } from '@ckeditor/ckeditor5-adapter-ckfinder';
+import { CKFinderUploadAdapter } from '@ckeditor/ckeditor5-adapter-ckfinder';
 import { Autoformat } from '@ckeditor/ckeditor5-autoformat';
 import { Bold, Italic, Underline } from '@ckeditor/ckeditor5-basic-styles';
 import { BlockQuote } from '@ckeditor/ckeditor5-block-quote';
@@ -23,7 +23,7 @@ import { SpecialCharacters, SpecialCharactersEssentials } from '@ckeditor/ckedit
 import { TextTransformation } from '@ckeditor/ckeditor5-typing';
 import { Undo } from '@ckeditor/ckeditor5-undo';
 declare class Editor extends ClassicEditor {
-    static builtinPlugins: (typeof Autoformat | typeof BlockQuote | typeof Bold | typeof Essentials | typeof FontSize | typeof Highlight | typeof Image | typeof ImageCaption | typeof ImageInsert | typeof ImageResize | typeof ImageStyle | typeof ImageUpload | typeof Indent | typeof IndentBlock | typeof Italic | typeof Link | typeof List | typeof Mention | typeof Paragraph | typeof PasteFromOffice | typeof RemoveFormat | typeof SpecialCharacters | typeof SpecialCharactersEssentials | typeof TextTransformation | typeof Underline | typeof Undo | typeof UploadAdapter)[];
+    static builtinPlugins: (typeof Mention | typeof CKFinderUploadAdapter | typeof TextTransformation | typeof Autoformat | typeof Bold | typeof Italic | typeof Underline | typeof BlockQuote | typeof Undo | typeof Essentials | typeof FontSize | typeof Highlight | typeof Image | typeof ImageCaption | typeof ImageInsert | typeof ImageResize | typeof ImageStyle | typeof ImageUpload | typeof Indent | typeof IndentBlock | typeof Link | typeof List | typeof Paragraph | typeof PasteFromOffice | typeof RemoveFormat | typeof SpecialCharacters | typeof SpecialCharactersEssentials)[];
     static defaultConfig: EditorConfig;
 }
 export default Editor;
