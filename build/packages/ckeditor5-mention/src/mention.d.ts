@@ -1,14 +1,14 @@
 /**
- * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * @license Copyright (c) 2003-2024, CKSource Holding sp. z o.o. All rights reserved.
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 /**
  * @module mention/mention
  */
-import { Plugin } from 'ckeditor5/src/core';
-import type { Element } from 'ckeditor5/src/engine';
-import MentionEditing from './mentionediting';
-import MentionUI from './mentionui';
+import { Plugin } from 'ckeditor5/src/core.js';
+import type { Element } from 'ckeditor5/src/engine.js';
+import MentionEditing from './mentionediting.js';
+import MentionUI from './mentionui.js';
 import '../theme/mention.css';
 /**
  * The mention plugin.
@@ -49,6 +49,10 @@ export default class Mention extends Plugin {
     /**
      * @inheritDoc
      */
+    static get isOfficialPlugin(): true;
+    /**
+     * @inheritDoc
+     */
     static get requires(): readonly [typeof MentionEditing, typeof MentionUI];
 }
 /**
@@ -67,11 +71,4 @@ export type MentionAttribute = {
      * {@link module:engine/view/downcastwriter~DowncastWriter#createAttributeElement writer.createAttributeElement()}.
      */
     uid: string;
-    /**
-     * Helper property that stores the text of the inserted mention. Used for detecting a broken mention
-     * in the editing area.
-     *
-     * @internal
-     */
-    _text: string;
 };

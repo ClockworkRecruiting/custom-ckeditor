@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * @license Copyright (c) 2003-2024, CKSource Holding sp. z o.o. All rights reserved.
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 /**
@@ -193,7 +193,7 @@ export interface MentionFeed {
 /**
  * Function that renders an array of {@link module:mention/mentionconfig~MentionFeedItem} based on string input.
  */
-export type FeedCallback = (searchString: string) => Array<MentionFeedItem> | Promise<Array<MentionFeedItem>>;
+export type FeedCallback = (searchString: string, item: any, callback: any) => Array<MentionFeedItem> | Promise<Array<MentionFeedItem>>;
 /**
  * Function that takes renders a {@link module:mention/mentionconfig~MentionFeedObjectItem} as HTMLElement.
  */
@@ -258,6 +258,7 @@ export type MentionFeedObjectItem = {
      * A unique ID of the mention. It must start with the marker character.
      */
     id: string;
+    nestedFeedId?: string;
     /**
      * Text inserted into the editor when creating a mention.
      */
