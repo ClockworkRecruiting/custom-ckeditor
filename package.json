@@ -30,8 +30,7 @@
     "@ckeditor/ckeditor5-typing": "43.3.0",
     "@ckeditor/ckeditor5-ui": "43.3.0",
     "@ckeditor/ckeditor5-undo": "43.3.0",
-    "@ckeditor/ckeditor5-utils": "43.3.0",
-    "lodash-es": "4.17.21"
+    "@ckeditor/ckeditor5-utils": "43.3.0"
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-clipboard": "43.3.0",
@@ -51,7 +50,7 @@
   },
   "scripts": {
     "build:mention": "yarn workspace @ckeditor/ckeditor5-mention build",
-    "clean:mention": "find packages/ckeditor5-mention/src -type f \\( -name '*.js' -o -name '*.js.map' \\) -delete",
+    "clean:mention": "find packages/ckeditor5-mention/src ./src -type f \\( -name '*.js' -o -name '*.js.map' \\) -delete",
     "build": "yarn build:mention && webpack --mode production && yarn clean:mention",
     "postbuild": "tsc --declaration --declarationDir build --stripInternal --emitDeclarationOnly"
   }
