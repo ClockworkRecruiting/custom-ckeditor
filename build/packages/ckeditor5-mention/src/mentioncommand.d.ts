@@ -6,7 +6,7 @@
  * @module mention/mentioncommand
  */
 import { Command, type Editor } from 'ckeditor5/src/core.js';
-import type { Range } from 'ckeditor5/src/engine.js';
+import type { ModelRange } from 'ckeditor5/src/engine.js';
 /**
  * The mention command.
  *
@@ -72,6 +72,6 @@ export default class MentionCommand extends Command {
         };
         marker: string;
         text?: string;
-        range?: Range;
+        range?: ModelRange;
     }): void;
 }

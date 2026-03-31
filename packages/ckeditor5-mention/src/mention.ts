@@ -8,7 +8,7 @@
  */
 
 import { Plugin } from 'ckeditor5/src/core.js';
-import type { Element } from 'ckeditor5/src/engine.js';
+import type { ViewElement } from 'ckeditor5/src/engine.js';
 
 import MentionEditing, { _toMentionAttribute } from './mentionediting.js';
 import MentionUI from './mentionui.js';
@@ -35,7 +35,7 @@ export default class Mention extends Plugin {
 	 * @param data Additional data to be stored in the mention attribute.
 	 */
 	public toMentionAttribute<MentionData extends Record<string, unknown>>(
-		viewElement: Element,
+		viewElement: ViewElement,
 		data: MentionData
 	): ( MentionAttribute & MentionData ) | undefined;
 
@@ -50,9 +50,9 @@ export default class Mention extends Plugin {
 	 * // { id: '@joe', uid: '7a7bc7...', _text: '@John Doe' }
 	 * ```
 	 */
-	public toMentionAttribute( viewElement: Element ): MentionAttribute | undefined;
+	public toMentionAttribute( viewElement: ViewElement ): MentionAttribute | undefined;
 
-	public toMentionAttribute( viewElement: Element, data?: Record<string, unknown> ): MentionAttribute | undefined {
+	public toMentionAttribute( viewElement: ViewElement, data?: Record<string, unknown> ): MentionAttribute | undefined {
 		return _toMentionAttribute( viewElement, data );
 	}
 
