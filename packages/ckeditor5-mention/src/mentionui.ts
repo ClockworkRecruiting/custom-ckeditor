@@ -15,7 +15,7 @@ import {
 import type {
 	ViewDocumentKeyDownEvent,
 	Marker,
-	Position
+	ModelPosition
 } from 'ckeditor5/src/engine.js';
 
 import {
@@ -31,7 +31,7 @@ import {
 	env,
 	keyCodes,
 	logWarning,
-	type PositionOptions
+	type DomOptimalPositionOptions
 } from 'ckeditor5/src/utils.js';
 
 import { TextWatcher, type TextWatcherMatchedEvent } from 'ckeditor5/src/typing.js';
@@ -586,7 +586,7 @@ export default class MentionUI extends Plugin {
 	 * @param mentionMarker
 	 * @param preferredPosition The name of the last matched position name.
 	 */
-	private _getBalloonPanelPositionData( mentionMarker: Marker, preferredPosition: MentionsView['position'] ): Partial<PositionOptions> {
+	private _getBalloonPanelPositionData( mentionMarker: Marker, preferredPosition: MentionsView['position'] ): Partial<DomOptimalPositionOptions> {
 		const editor = this.editor;
 		const editing = editor.editing;
 		const domConverter = editing.view.domConverter;
@@ -630,8 +630,8 @@ export default class MentionUI extends Plugin {
 function getBalloonPanelPositions(
 	preferredPosition: MentionsView['position'],
 	uiLanguageDirection: string
-): PositionOptions['positions'] {
-	const positions: Record<string, PositionOptions['positions'][0]> = {
+): DomOptimalPositionOptions['positions'] {
+	const positions: Record<string, DomOptimalPositionOptions['positions'][0]> = {
 		// Positions the panel to the southeast of the caret rectangle.
 		'caret_se': ( targetRect: Rect ) => {
 			return {
@@ -840,7 +840,7 @@ function createFeedCallback( feedItems: Array<MentionFeedItem> ) {
 /**
  * Checks if position in inside or right after a text with a mention.
  */
-function isPositionInExistingMention( position: Position ): boolean | null {
+function isPositionInExistingMention( position: ModelPosition ): boolean | null {
 	// The text watcher listens only to changed range in selection - so the selection attributes are not yet available
 	// and you cannot use selection.hasAttribute( 'mention' ) just yet.
 	// See https://github.com/ckeditor/ckeditor5-engine/issues/1723.
@@ -856,7 +856,7 @@ function isPositionInExistingMention( position: Position ): boolean | null {
  *
  * See https://github.com/ckeditor/ckeditor5/issues/11400.
  */
-function isMarkerInExistingMention( markerPosition: Position ): boolean | null {
+function isMarkerInExistingMention( markerPosition: ModelPosition ): boolean | null {
 	const nodeAfter = markerPosition.nodeAfter;
 
 	return nodeAfter && nodeAfter.is( '$text' ) && nodeAfter.hasAttribute( 'mention' );
